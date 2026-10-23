@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Winter Date?</title>
+<meta name="description" content="Mach mal das Licht an. Und zieh dich warm an.">
+<meta property="og:title" content="Winter Date?">
+<meta property="og:description" content="Mach mal das Licht an. Und zieh dich warm an.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b0d12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Neonderthaw&family=Tilt+Neon&display=swap">
+<style>
+  /* Layout: eine zentrierte Spalte (max. 500px) vor einer kalten Backsteinwand im Schnee;
+     vier Szenen: Leuchtreklame → Was machen wir? → Details → Neon-Herz */
+  :root {
+    --wall: #0b0d12;
+    --text: #f2f7ff;
+    --text-dim: #c9d4e3;
+    --ice: #8ae6ff;
+    --ice-core: #effdff;
+    --ice-deep: #2fc8ff;
+    --pink: #ff5fae;
+    --pink-deep: #ff2d8a;
+    --pink-core: #ffe9f4;
+    --warm: #ffe2b8;
+    --amber: #ffbf5e;
+    --violet: #c4a1ff;
+    --mint: #8dffc4;
+    --glass: rgba(12, 16, 24, .8);
+    --line: rgba(220, 235, 255, .18);
+    --font-neon: "Neonderthaw", "Brush Script MT", "Segoe Script", cursive;
+    --font-tube: "Tilt Neon", "Manrope", system-ui, sans-serif;
+    --font-body: "Manrope", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    background-color: var(--wall);
+    color: var(--text);
+    font: 400 1rem/1.55 var(--font-body);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* kalte Backsteinwand im Mondlicht */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(140, 190, 255, .14) 0%, rgba(140, 190, 255, 0) 70%),
+      radial-gradient(ellipse 90% 70% at 50% 30%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .55) 72%, rgba(0, 0, 0, .85) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Crect width='120' height='60' fill='%230a0b0f'/%3E%3Crect x='1' y='1' width='57' height='27' rx='2' fill='%232b2327'/%3E%3Crect x='61' y='1' width='58' height='27' rx='2' fill='%23302629'/%3E%3Crect x='-29' y='31' width='57' height='27' rx='2' fill='%23282125'/%3E%3Crect x='91' y='31' width='58' height='27' rx='2' fill='%23282125'/%3E%3Crect x='31' y='31' width='57' height='27' rx='2' fill='%232e2428'/%3E%3C/svg%3E") 0 0 / 120px 60px,
+      var(--wall);
+  }
+  /* Schein der Leuchtreklame */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 40% at 50% 12%, rgba(138, 230, 255, .26), rgba(138, 230, 255, 0) 70%),
+      radial-gradient(60% 34% at 50% 26%, rgba(255, 95, 174, .18), rgba(255, 95, 174, 0) 70%);
+    opacity: 0;
+    transition: opacity 1.4s ease;
+  }
+  body.lit::after { opacity: 1; }
+  /* Frost in den Ecken */
+  .frost {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 0 0, rgba(225, 240, 255, .16), rgba(225, 240, 255, 0) 26%),
+      radial-gradient(circle at 100% 0, rgba(225, 240, 255, .12), rgba(225, 240, 255, 0) 22%),
+      radial-gradient(circle at 0 100%, rgba(225, 240, 255, .12), rgba(225, 240, 255, 0) 24%),
+      radial-gradient(circle at 100% 100%, rgba(225, 240, 255, .16), rgba(225, 240, 255, 0) 28%);
+  }
+  .snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  main { position: relative; z-index: 1; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .scene {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: max(28px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(28px, env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { width: 100%; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+  .scene.enter .wrap { animation: rise .6s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+
+  .eyebrow {
+    margin: 0;
+    text-align: center;
+    font: 400 1.05rem/1.2 var(--font-tube);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ice-core);
+    text-shadow: 0 0 6px rgba(138, 230, 255, .7), 0 0 16px rgba(47, 200, 255, .45);
+  }
+  h1, h2 { margin: 0; line-height: 1.12; text-wrap: balance; }
+  h1:focus, h2:focus { outline: none; }
+  .title {
+    font: 800 clamp(1.8rem, 7.2vw, 2.4rem)/1.12 var(--font-body);
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .7);
+  }
+  .hint { margin: 0; text-align: center; color: var(--text-dim); text-shadow: 0 1px 4px rgba(0, 0, 0, .8); }
+  .panel {
+    padding: 20px 18px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 24px 50px -30px rgba(0, 0, 0, .9);
+  }
+
+  /* ---------- Buttons ---------- */
+  .actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+    min-height: 52px;
+    padding: 14px 24px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font: 800 1.05rem/1.2 var(--font-body);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform .15s ease, box-shadow .25s ease, background-color .2s ease, border-color .2s ease;
+  }
+  .btn-primary {
+    background: var(--pink-deep);
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(255, 233, 244, .35) inset, 0 0 18px rgba(255, 45, 138, .55), 0 12px 26px -12px rgba(255, 45, 138, .9);
+  }
+  .btn-ghost { background: rgba(12, 16, 24, .55); color: var(--text); border-color: rgba(220, 235, 255, .5); }
+  .btn:active { transform: scale(.98); }
+  .btn[disabled] { opacity: .6; cursor: default; }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  @media (hover: hover) {
+    .btn-primary:not([disabled]):hover { box-shadow: 0 0 0 1px rgba(255, 233, 244, .5) inset, 0 0 26px rgba(255, 45, 138, .8), 0 12px 26px -12px rgba(255, 45, 138, .9); }
+    .btn-ghost:not([disabled]):hover { border-color: var(--text); }
+  }
+  .btn-text {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 0;
+    background: none;
+    color: var(--text-dim);
+    font: 700 .98rem/1.2 var(--font-body);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .btn:focus-visible, .btn-text:focus-visible, .pull:focus-visible { outline: 3px solid var(--ice); outline-offset: 3px; }
+
+  /* ---------- 1 · Leuchtreklame ---------- */
+  .sign { position: relative; z-index: 2; margin: 6px auto 0; width: min(100%, 380px); }
+  .plate {
+    position: relative;
+    padding: 20px 16px 22px;
+    border: 1px solid rgba(220, 235, 255, .12);
+    border-radius: 22px;
+    background: rgba(200, 225, 255, .035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 20px 40px -26px rgba(0, 0, 0, .9);
+  }
+  /* Schrauben der Acrylplatte */
+  .plate::before, .plate::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #e4e8ee, #6b717c 70%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+  }
+  .plate::before { left: 12px; }
+  .plate::after { right: 12px; }
+  .neon { margin: 0; text-align: center; transition: color .2s ease; }
+  .neon-winter, .neon-date { display: block; }
+  .neon-winter {
+    font: 400 clamp(2.5rem, 12.5vw, 3.8rem)/1 var(--font-tube);
+    letter-spacing: .05em;
+    color: rgba(220, 240, 255, .06);
+    -webkit-text-stroke: 1.2px rgba(190, 230, 255, .32);
+  }
+  .neon-date {
+    margin-top: -4px;
+    font: 400 clamp(4.4rem, 23vw, 7rem)/.95 var(--font-neon);
+    color: rgba(255, 230, 240, .06);
+    -webkit-text-stroke: 1.3px rgba(255, 200, 225, .3);
+  }
+  .neon-sub {
+    margin-top: 6px;
+    font: 400 clamp(1.4rem, 6.5vw, 1.85rem)/1 var(--font-tube);
+    letter-spacing: .08em;
+    color: rgba(255, 240, 220, .06);
+    -webkit-text-stroke: 1.2px rgba(255, 235, 210, .3);
+  }
+  .flake {
+    width: .5em;
+    height: .5em;
+    margin: 0 .22em;
+    vertical-align: .1em;
+    fill: none;
+    stroke: rgba(190, 230, 255, .32);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .sign.on .neon-winter {
+    color: var(--ice-core);
+    -webkit-text-stroke: 0 transparent;
+    text-shadow: 0 0 2px #fff, 0 0 7px #bff4ff, 0 0 16px var(--ice), 0 0 30px var(--ice), 0 0 54px var(--ice-deep), 0 0 90px var(--ice-deep);
+  }
+  .sign.on .flake {
+    stroke: var(--ice-core);
+    filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px var(--ice)) drop-shadow(0 0 14px var(--ice-deep));
+  }
+  .sign.on .neon-date {
+    color: var(--pink-core);
+    -webkit-text-stroke: 0 transparent;
+    text-shadow: 0 0 2px #fff, 0 0 7px #ff9cc9, 0 0 16px var(--pink), 0 0 30px var(--pink), 0 0 54px var(--pink-deep), 0 0 90px var(--pink-deep);
+  }
+  .sign.on .neon-sub {
+    color: #fff6ea;
+    -webkit-text-stroke: 0 transparent;
+    text-shadow: 0 0 2px #fff, 0 0 8px var(--warm), 0 0 18px var(--amber), 0 0 34px rgba(255, 191, 94, .7);
+  }
+  .sign.flicker .neon-winter { animation: flicker-on 1.2s linear both; }
+  .sign.flicker .neon-date { animation: flicker-on 1.3s linear .35s both; }
+  .sign.flicker .neon-sub { animation: flicker-on 1.1s linear .8s both; }
+  @keyframes flicker-on {
+    0% { opacity: .15; } 6% { opacity: 1; } 9% { opacity: .2; } 15% { opacity: 1; } 18% { opacity: .35; }
+    26% { opacity: 1; } 30% { opacity: .55; } 34%, 100% { opacity: 1; }
+  }
+  /* ein Buchstabe brummt ab und zu, wie bei echten Röhren */
+  .sign.on .hum { animation: hum 7s linear 3s infinite; }
+  @keyframes hum { 0%, 91%, 95%, 100% { opacity: 1; } 92% { opacity: .35; } 93% { opacity: .9; } 94% { opacity: .4; } }
+
+  /* Zugschalter */
+  .pull {
+    position: absolute;
+    right: 6px;
+    top: calc(100% - 6px);
+    width: 48px;
+    height: 104px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .pull .cord { position: absolute; left: 50%; top: 0; width: 2px; height: 76px; margin-left: -1px; background: linear-gradient(#8a8f99, #d3d8e0); }
+  .pull .bead {
+    position: absolute;
+    left: 50%;
+    top: 72px;
+    width: 18px;
+    height: 22px;
+    margin-left: -9px;
+    border-radius: 45% 45% 50% 50%;
+    background: radial-gradient(circle at 35% 30%, #ffffff, #9fb4c8 70%);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .6);
+  }
+  .pull .cord, .pull .bead { transition: transform .35s cubic-bezier(.3, 1.8, .5, 1); }
+  .pull.tug .cord { transform: scaleY(1.28); transform-origin: top; }
+  .pull.tug .bead { transform: translateY(21px); }
+  .pull-hint {
+    margin: 18px 0 0;
+    padding-right: 64px;
+    text-align: right;
+    font-size: .95rem;
+    color: var(--text-dim);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+  }
+  .light-actions { margin-top: 64px; }
+
+  /* Letterboard mit dem Datum von heute */
+  .letterboard {
+    margin: 14px auto 0;
+    width: min(100%, 340px);
+    padding: 16px 14px;
+    border: 9px solid #5b4632;
+    border-radius: 8px;
+    background: repeating-linear-gradient(180deg, #17181d 0 9px, #0b0c0f 9px 10px);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6), inset 0 6px 12px rgba(0, 0, 0, .6), 0 18px 34px -18px rgba(0, 0, 0, .9);
+    transform: rotate(-1.2deg);
+    text-align: center;
+  }
+  /* Schnee auf dem Rahmen */
+  .letterboard { position: relative; }
+  .letterboard::before {
+    content: "";
+    position: absolute;
+    left: -11px;
+    right: -11px;
+    top: -14px;
+    height: 12px;
+    border-radius: 10px 12px 4px 4px;
+    background: linear-gradient(180deg, #ffffff, #dfe9f5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+  }
+  .scene.lit-in .letterboard { animation: board-in .7s var(--ease) both; }
+  @keyframes board-in { from { opacity: 0; transform: translateY(18px) rotate(-4deg); } to { opacity: 1; transform: rotate(-1.2deg); } }
+  .lb-line {
+    margin: 0;
+    font: 700 1rem/1.5 var(--font-body);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #f3f3f0;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+    text-wrap: balance;
+  }
+  .lb-small { font-size: .8rem; letter-spacing: .22em; color: #cfd2d6; }
+  .lb-big { margin: 4px 0; font-size: 1.35rem; letter-spacing: .16em; color: #9ce8ff; }
+  .accept-note { min-height: 1.5em; margin: 0; text-align: center; font-weight: 800; color: var(--warm); text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+
+  /* ---------- 2 · Was machen wir? ---------- */
+  .acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 560px) { .acts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .act { position: relative; display: block; }
+  .act input, .chip input {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .act-face {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    height: 100%;
+    min-height: 142px;
+    padding: 14px 12px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    background: var(--glass);
+    transition: border-color .25s ease, box-shadow .25s ease, background-color .25s ease;
+  }
+  .act-face svg { width: 40px; height: 40px; flex: none; color: rgba(225, 238, 255, .5); transition: color .25s ease, filter .25s ease; }
+  .act-name { font: 800 1rem/1.2 var(--font-body); color: var(--text); }
+  .act-quip { font-size: .84rem; line-height: 1.35; color: var(--text-dim); }
+  .act-note { font-size: .8rem; line-height: 1.3; font-weight: 800; color: var(--amber); }
+  .act-face::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid rgba(225, 238, 255, .45);
+    border-radius: 50%;
+  }
+  .act input:checked + .act-face {
+    border-color: var(--c);
+    background: rgba(12, 16, 24, .92);
+    box-shadow: 0 0 0 1px var(--c) inset, 0 0 22px -4px var(--c);
+  }
+  .act input:checked + .act-face svg { color: var(--c); filter: drop-shadow(0 0 4px var(--c)) drop-shadow(0 0 10px var(--c)); }
+  .act input:checked + .act-face .act-name { color: #fff; text-shadow: 0 0 10px var(--c); }
+  .act input:checked + .act-face::after,
+  .chip input:checked + .chip-face .mark {
+    border-color: var(--c, var(--pink));
+    background: var(--c, var(--pink)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.3l2.2 2.2 4.8-5' fill='none' stroke='%230b0d12' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+  }
+  .act input:focus-visible + .act-face, .chip input:focus-visible + .chip-face { outline: 3px solid var(--ice); outline-offset: 2px; }
+  /* Aktivitäten, die heute nicht gehen */
+  .act.off input { cursor: not-allowed; }
+  .act.off .act-face { border-style: dashed; }
+  .act.off .act-face svg, .act.off .act-name, .act.off .act-quip { opacity: .45; }
+  .act.off .act-face::after { border-style: dashed; opacity: .5; }
+  @media (hover: hover) {
+    .act:not(.off):hover .act-face, .chip:hover .chip-face { border-color: rgba(225, 238, 255, .5); }
+    .act:hover input:checked + .act-face { border-color: var(--c); }
+  }
+  .c-pink { --c: var(--pink); }
+  .c-ice { --c: var(--ice); }
+  .c-amber { --c: var(--amber); }
+  .c-violet { --c: var(--violet); }
+  .c-mint { --c: var(--mint); }
+  .form-error { margin: 0; min-height: 1.4em; text-align: center; color: #ffb3c8; font-weight: 800; text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+
+  /* ---------- 3 · Details ---------- */
+  .detail { display: grid; gap: 10px; }
+  .detail:not([hidden]) ~ .detail:not([hidden]) { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .detail-label { margin: 0; font: 800 1.08rem/1.3 var(--font-body); color: var(--text); }
+  .detail-sub { margin: -4px 0 0; font-size: .9rem; color: var(--text-dim); }
+  .select {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 44px 12px 16px;
+    border: 1.5px solid rgba(138, 230, 255, .55);
+    border-radius: 14px;
+    background: #0d1219 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238ae6ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 12px 8px;
+    color: var(--text);
+    font: 600 16px/1.3 var(--font-body);
+    box-shadow: 0 0 14px -6px rgba(138, 230, 255, .8);
+    cursor: pointer;
+  }
+  .select:focus-visible { outline: 3px solid var(--ice); outline-offset: 2px; }
+  .select option, .select optgroup { background: #131a24; color: var(--text); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; display: inline-flex; }
+  .chip-face {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 10px 16px 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: rgba(12, 16, 24, .6);
+    font: 700 .98rem/1.25 var(--font-body);
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .chip input:checked + .chip-face { border-color: var(--pink); box-shadow: 0 0 14px -4px var(--pink); }
+  .mark { flex: none; width: 20px; height: 20px; border: 1.5px solid rgba(225, 238, 255, .5); border-radius: 50%; }
+  .chip-radio input:checked + .chip-face .mark { background: radial-gradient(circle, #0b0d12 0 3px, var(--pink) 3.5px); }
+  .wish {
+    display: block;
+    width: 100%;
+    min-height: 92px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    background: #0d1219;
+    color: var(--text);
+    font: 400 16px/1.45 var(--font-body);
+    resize: vertical;
+  }
+  .wish::placeholder { color: #9aa6b6; opacity: 1; }
+  .wish:focus-visible { outline: 3px solid var(--ice); outline-offset: 2px; }
+  .wish-count { justify-self: end; font-size: .8rem; color: var(--text-dim); }
+
+  /* ---------- 4 · Neon-Herz ---------- */
+  .neon-heart { display: block; width: min(260px, 70vw); height: auto; margin: 0 auto; overflow: visible; }
+  .scene-finale.play .neon-heart { animation: flicker-on 1.5s linear .2s both; }
+  .love {
+    margin: -6px 0 0;
+    text-align: center;
+    font: 400 clamp(3rem, 15vw, 4.4rem)/1 var(--font-neon);
+    color: var(--pink-core);
+    text-shadow: 0 0 2px #fff, 0 0 7px #ff9cc9, 0 0 16px var(--pink), 0 0 32px var(--pink), 0 0 60px var(--pink-deep);
+  }
+  .scene-finale.play .love { animation: flicker-on 1.3s linear 1.1s both; }
+  .love-sub { margin: 0; text-align: center; font-size: 1.05rem; color: var(--text-dim); text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+  .plan-title {
+    margin: 0 0 12px;
+    text-align: center;
+    font: 400 1.1rem/1.2 var(--font-tube);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ice-core);
+    text-shadow: 0 0 6px rgba(138, 230, 255, .8), 0 0 16px rgba(47, 200, 255, .45);
+  }
+  .plan-list { display: grid; gap: 12px; margin: 0; }
+  .plan-row { display: grid; gap: 2px; }
+  .plan-row dt { font: 800 .74rem/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: #9ce8ff; }
+  .plan-row dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .plan-row dd.open { color: var(--text-dim); font-style: italic; font-weight: 400; }
+  .preview-label {
+    margin: 4px 0 0;
+    text-align: center;
+    font: 800 .78rem/1.3 var(--font-body);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--warm);
+  }
+  .bubble {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 18px 18px 18px 6px;
+    background: #eef3f8;
+    color: #18202a;
+    font-size: .97rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    box-shadow: 0 16px 30px -22px rgba(0, 0, 0, .9);
+  }
+  .copy-status { min-height: 1.4em; margin: 0; text-align: center; color: var(--text-dim); font-weight: 700; }
+  .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 10px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="frost" aria-hidden="true"></div>
+<canvas class="snow" id="snow" aria-hidden="true"></canvas>
+
+<noscript><p style="position:relative;z-index:2;padding:24px;text-align:center">Diese Einladung braucht JavaScript. Bitte im Browser einschalten.</p></noscript>
+
+<main>
+
+  <!-- 1 · Leuchtreklame -->
+  <section class="scene" id="scene-wall" aria-labelledby="sign-title">
+    <div class="wrap">
+      <div class="sign" id="sign">
+        <div class="plate">
+          <h1 class="neon" id="sign-title" tabindex="-1" data-heading>
+            <span class="neon-winter"><svg class="flake" viewBox="-13 -13 26 26" aria-hidden="true" focusable="false"><path d="M0 -11V11M-9.5 -5.5L9.5 5.5M-9.5 5.5L9.5 -5.5M-3 -8.5L0 -5.5L3 -8.5M-3 8.5L0 5.5L3 8.5"/></svg>W<span class="hum">i</span>nter<svg class="flake" viewBox="-13 -13 26 26" aria-hidden="true" focusable="false"><path d="M0 -11V11M-9.5 -5.5L9.5 5.5M-9.5 5.5L9.5 -5.5M-3 -8.5L0 -5.5L3 -8.5M-3 8.5L0 5.5L3 8.5"/></svg></span>
+            <span class="neon-date">Date?</span>
+          </h1>
+          <p class="neon neon-sub" aria-hidden="true">du &amp; ich</p>
+        </div>
+        <button type="button" class="pull" id="pull" aria-label="Licht anschalten">
+          <span class="cord" aria-hidden="true"></span><span class="bead" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div id="before-light">
+        <p class="pull-hint">Zieh mal an der Schnur.<br>Handschuhe darfst du anlassen.</p>
+        <div class="actions light-actions">
+          <button type="button" class="btn btn-ghost" id="light-btn">Licht an</button>
+        </div>
+      </div>
+
+      <div id="after-light" hidden>
+        <div class="letterboard" aria-live="polite">
+          <p class="lb-line lb-small">Heute</p>
+          <p class="lb-line" id="lb-date"></p>
+          <p class="lb-line lb-big">Winter Date</p>
+          <p class="lb-line lb-small">Zieh dich warm an</p>
+        </div>
+        <p class="hint" style="margin-top:18px">Kein Kalender-Gecheck nötig. Das Datum ist immer heute.</p>
+        <div class="actions" style="margin-top:18px">
+          <button type="button" class="btn btn-primary" id="accept-ja">Ich bin dabei!</button>
+          <button type="button" class="btn btn-ghost" id="accept-aussuchen">Kommt drauf an, was wir machen</button>
+        </div>
+        <p class="accept-note" id="accept-note" aria-live="polite" style="margin-top:12px"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · Was machen wir? -->
+  <section class="scene" id="scene-plan" aria-labelledby="plan-heading" hidden>
+    <div class="wrap">
+      <p class="eyebrow">Winterprogramm</p>
+      <h1 class="title" id="plan-heading" tabindex="-1" data-heading>Was machen wir?</h1>
+      <p class="hint">Alles in und um Stuttgart. Such dir aus, worauf du Lust hast. Gern auch mehreres.</p>
+
+      <fieldset style="margin:0;padding:0;border:0;min-width:0">
+        <legend class="sr-only">Was wir machen</legend>
+        <div class="acts">
+          <label class="act c-pink"><input type="checkbox" name="act" id="act-markt" value="Weihnachtsmarkt"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21L24 9l17 12"/><path d="M11 21v19h26V21"/><path d="M11 30h26"/><path d="M19 40v-6h10v6"/><circle cx="17" cy="25" r="1.3" fill="currentColor"/><circle cx="24" cy="25" r="1.3" fill="currentColor"/><circle cx="31" cy="25" r="1.3" fill="currentColor"/></svg>
+            <span class="act-name">Weihnachtsmarkt</span><span class="act-quip">Glühwein, Lichter, Hand in Hand.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-amber"><input type="checkbox" name="act" id="act-garden" value="Christmas Garden in der Wilhelma"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5L14 18h6L11 29h7L9 40h30l-9-11h7l-9-11h6z"/><path d="M22 40v4h4v-4"/><circle cx="20" cy="22" r="1.4" fill="currentColor"/><circle cx="28" cy="27" r="1.4" fill="currentColor"/><circle cx="19" cy="34" r="1.4" fill="currentColor"/><circle cx="29" cy="36" r="1.4" fill="currentColor"/></svg>
+            <span class="act-name">Christmas Garden</span><span class="act-quip">Die Wilhelma voller Lichter.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-ice"><input type="checkbox" name="act" id="act-eis" value="Schlittschuh laufen"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7h10v14l11 4c3 1 5 3 5 6v3H13z"/><path d="M17 13h4M17 18h4"/><path d="M17 34v5M33 34v5"/><path d="M8 39h31c2.5 0 4-1.5 4-3.5"/></svg>
+            <span class="act-name">Schlittschuh laufen</span><span class="act-quip">Eiswelt Stuttgart. Ich halt dich fest.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-violet"><input type="checkbox" name="act" id="act-therme" value="Therme"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 33c3 0 3-2 6-2s3 2 6 2 3-2 6-2 3 2 6 2 3-2 6-2 3 2 6 2"/><path d="M6 40c3 0 3-2 6-2s3 2 6 2 3-2 6-2 3 2 6 2 3-2 6-2 3 2 6 2"/><path d="M16 24c-3-3 3-5 0-9M24 24c-3-3 3-5 0-9M32 24c-3-3 3-5 0-9"/></svg>
+            <span class="act-name">Therme</span><span class="act-quip">Draußen kalt, im Wasser warm.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-mint"><input type="checkbox" name="act" id="act-rodel" value="Schlitten fahren"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 25h24"/><path d="M14 25v8M30 25v8"/><path d="M6 33h31c4 0 6-3 6-6"/><path d="M34 25c3 0 5-2 5-4"/><path d="M10 25c-3 0-4-3-3-5"/></svg>
+            <span class="act-name">Schlitten fahren</span><span class="act-quip">Sobald Schnee liegt. Ich zieh dich hoch.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-pink"><input type="checkbox" name="act" id="act-essen" value="Essen gehen"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8v11a5 5 0 0010 0V8M19 8v32"/><path d="M34 8c-4 4-5 11-3 17h3v15"/></svg>
+            <span class="act-name">Essen gehen</span><span class="act-quip">Ich lad dich ein.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-amber"><input type="checkbox" name="act" id="act-kochen" value="Zusammen kochen"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22h28v9a8 8 0 01-8 8H18a8 8 0 01-8-8z"/><path d="M6 22h36M5 27h5M38 27h5"/><path d="M18 16c-2-3 2-4 0-7M24 16c-2-3 2-4 0-7M30 16c-2-3 2-4 0-7"/></svg>
+            <span class="act-name">Zusammen kochen</span><span class="act-quip">Käsefondue? Raclette? Du entscheidest.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-ice"><input type="checkbox" name="act" id="act-film" value="Filmabend unter der Decke"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="14" width="34" height="22" rx="4"/><path d="M18 8l6 6 6-6M18 41h12"/><path d="M21 20l8 5-8 5z"/></svg>
+            <span class="act-name">Filmabend unter der Decke</span><span class="act-quip">Decke, Tee, Pausetaste.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-violet"><input type="checkbox" name="act" id="act-turm" value="Fernsehturm bei Nacht"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 3v9"/><path d="M17 12h14v6H17z"/><path d="M21 18l-2 23h10l-2-23"/><path d="M13 42h22"/><path d="M8 10l3 2M40 10l-3 2M7 18h3M41 18h-3"/></svg>
+            <span class="act-name">Fernsehturm bei Nacht</span><span class="act-quip">Stuttgart von oben, Lichter unten.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-mint"><input type="checkbox" name="act" id="act-spaziergang" value="Winterspaziergang"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 40V24a6 6 0 0112 0v1l3-3a3 3 0 014 4l-7 8v6z"/><path d="M10 35h12"/><path d="M38 40V24a6 6 0 00-12 0"/><path d="M38 35h-8"/></svg>
+            <span class="act-name">Winterspaziergang</span><span class="act-quip">Zum Bärenschlössle. Rote Nasen inklusive.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-amber"><input type="checkbox" name="act" id="act-feuerzangen" value="Feuerzangenbowle"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 27h32c0 8-7 13-16 13S8 35 8 27z"/><path d="M8 22h32"/><path d="M19 22l5-9 5 9"/><path d="M24 9c-2-2-1-5 0-6 1 1 3 3 0 6z"/></svg>
+            <span class="act-name">Feuerzangenbowle</span><span class="act-quip">Das Getränk und der Film. Klassiker.</span><span class="act-note" hidden></span></span></label>
+          <label class="act c-ice"><input type="checkbox" name="act" id="act-ueberrasch" value="Überrasch mich"><span class="act-face">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="20" width="28" height="19" rx="2"/><rect x="7" y="14" width="34" height="6" rx="2"/><path d="M24 14v25"/><path d="M24 14c-4-7-11-5-8 0M24 14c4-7 11-5 8 0"/></svg>
+            <span class="act-name">Überrasch mich</span><span class="act-quip">Ich hab da schon was im Kopf …</span><span class="act-note" hidden></span></span></label>
+        </div>
+      </fieldset>
+
+      <p class="form-error" id="plan-error" aria-live="polite"></p>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="to-details">Weiter</button>
+        <button type="button" class="btn-text" data-go="wall">Zurück</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · Details -->
+  <section class="scene" id="scene-details" aria-labelledby="details-heading" hidden>
+    <div class="wrap">
+      <p class="eyebrow">Feinschliff</p>
+      <h1 class="title" id="details-heading" tabindex="-1" data-heading>Noch ein paar Details</h1>
+
+      <div class="panel">
+        <div class="detail" id="sec-markt" hidden>
+          <label class="detail-label" for="markt">Welcher Weihnachtsmarkt?</label>
+          <p class="detail-sub">Alle in und um Stuttgart.</p>
+          <select class="select" id="markt" name="markt">
+            <option value="">Bitte auswählen …</option>
+            <option value="Stuttgarter Weihnachtsmarkt" data-label="Stuttgarter Weihnachtsmarkt" data-from="2026-11-25" data-to="2026-12-23">Stuttgarter Weihnachtsmarkt</option>
+            <option value="Cannstatter Sternenmarkt" data-label="Cannstatter Sternenmarkt" data-from="2026-11-25" data-to="2026-12-23">Cannstatter Sternenmarkt</option>
+            <option value="Esslinger Mittelalter- &amp; Weihnachtsmarkt" data-label="Esslinger Mittelalter- &amp; Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22">Esslinger Mittelalter- &amp; Weihnachtsmarkt</option>
+            <option value="Ludwigsburger Barock-Weihnachtsmarkt" data-label="Ludwigsburger Barock-Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22">Ludwigsburger Barock-Weihnachtsmarkt</option>
+            <option value="Stuttgarter Waldweihnacht (Degerloch)" data-label="Waldweihnacht in Degerloch" data-from="2026-12-04" data-to="2026-12-05">Waldweihnacht in Degerloch</option>
+            <option value="chocolART Schokoladenfestival (Tübingen)" data-label="chocolART Schokoladenfestival (Tübingen)" data-from="2026-12-01" data-to="2026-12-06">chocolART Schokoladenfestival (Tübingen)</option>
+            <option value="Überrasch mich" data-any>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-therme" hidden>
+          <label class="detail-label" for="therme">In welche Therme?</label>
+          <select class="select" id="therme" name="therme">
+            <option value="">Bitte auswählen …</option>
+            <option>Mineraltherme Böblingen</option>
+            <option>Fildorado (Filderstadt)</option>
+            <option>SchwabenQuellen (Möhringen)</option>
+            <option>Das Leuze (Stuttgart)</option>
+            <option>Mineralbad Cannstatt</option>
+            <option>Panorama Therme Beuren</option>
+            <option>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-rodel" hidden>
+          <label class="detail-label" for="rodel">Wo rodeln wir?</label>
+          <p class="detail-sub">Sobald genug Schnee liegt.</p>
+          <select class="select" id="rodel" name="rodel">
+            <option value="">Bitte auswählen …</option>
+            <option>Hang am Schloss Solitude</option>
+            <option>Ludwigsburger Allee (Weilimdorf)</option>
+            <option>Bernhartshöhe (Vaihingen)</option>
+            <option>Wernhalde (Degerloch)</option>
+            <option>Piz Mus (Musberg)</option>
+            <option>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-eis" role="radiogroup" aria-labelledby="fall-label" hidden>
+          <p class="detail-label" id="fall-label">Wer fällt beim Eislaufen zuerst hin?</p>
+          <div class="chips">
+            <label class="chip chip-radio"><input type="radio" name="fall" id="fall-ich" value="ich"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Ich</span></label>
+            <label class="chip chip-radio"><input type="radio" name="fall" id="fall-du" value="du"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Du</span></label>
+            <label class="chip chip-radio"><input type="radio" name="fall" id="fall-keiner" value="keiner, wir halten uns fest"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Keiner, wir halten uns fest</span></label>
+          </div>
+        </div>
+
+        <div class="detail" id="sec-restaurant" hidden>
+          <label class="detail-label" for="restaurant">Wo gehen wir essen?</label>
+          <p class="detail-sub">Ausgesuchte Restaurants in Stuttgart und Umgebung.</p>
+          <select class="select" id="restaurant" name="restaurant">
+            <option value="">Bitte auswählen …</option>
+            <optgroup label="Gemütlich &amp; warm">
+              <option value="Weinstube Schellenturm">Weinstube Schellenturm</option>
+              <option value="CUBE im Kunstmuseum">CUBE im Kunstmuseum</option>
+            </optgroup>
+            <optgroup label="Italienisch">
+              <option value="Colvino">Colvino</option>
+              <option value="La Stella 11">La Stella 11</option>
+              <option value="L’Artista (Plieningen)">L’Artista (Plieningen)</option>
+              <option value="La Farina (Feuerbach)">La Farina (Feuerbach)</option>
+            </optgroup>
+            <optgroup label="Steak">
+              <option value="Christophorus (Porsche Museum)">Christophorus (Porsche Museum)</option>
+            </optgroup>
+            <optgroup label="Sushi &amp; Asiatisch">
+              <option value="QQ Sushi-Lounge">QQ Sushi-Lounge</option>
+              <option value="Sushi Hao">Sushi Hao</option>
+              <option value="Sen Viet (vietnamesisch)">Sen Viet (vietnamesisch)</option>
+            </optgroup>
+            <optgroup label="Griechisch">
+              <option value="Hirsch (Möhringen)">Hirsch (Möhringen)</option>
+              <option value="Paros (Weilimdorf)">Paros (Weilimdorf)</option>
+            </optgroup>
+            <optgroup label="Spanisch">
+              <option value="Jose y Josefina">Jose y Josefina</option>
+            </optgroup>
+            <optgroup label="Indisch">
+              <option value="Indian Thali">Indian Thali</option>
+              <option value="Kashmir">Kashmir</option>
+            </optgroup>
+            <optgroup label="Mexikanisch">
+              <option value="Houston’s Fine Burrito Company">Houston’s Fine Burrito Company</option>
+            </optgroup>
+            <optgroup label="Burger">
+              <option value="Udo Snack">Udo Snack</option>
+            </optgroup>
+            <optgroup label="Oder">
+              <option value="Überrasch mich">Überrasch mich</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-dish" hidden>
+          <label class="detail-label" for="dish">Was kochen wir?</label>
+          <select class="select" id="dish" name="dish">
+            <option value="">Bitte auswählen …</option>
+            <option>Käsefondue</option>
+            <option>Raclette</option>
+            <option>Käsespätzle</option>
+            <option>Kürbissuppe</option>
+            <option>Gulasch</option>
+            <option>Maultaschen</option>
+            <option>Schokofondue zum Nachtisch</option>
+            <option>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-genre" hidden>
+          <label class="detail-label" for="genre">Welcher Film soll’s sein?</label>
+          <select class="select" id="genre" name="genre">
+            <option value="">Bitte auswählen …</option>
+            <option>Weihnachtsfilm</option>
+            <option>Romantik</option>
+            <option>Komödie</option>
+            <option value="Horror (ich halt dich fest)">Horror (ich halt dich fest)</option>
+            <option>Thriller</option>
+            <option>Animation</option>
+            <option>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" id="sec-drink">
+          <label class="detail-label" for="drink">Was wärmt uns auf?</label>
+          <select class="select" id="drink" name="drink">
+            <option value="">Bitte auswählen …</option>
+            <option>Glühwein</option>
+            <option>Kinderpunsch</option>
+            <option>Heiße Schokolade mit Sahne</option>
+            <option>Feuerzangenbowle</option>
+            <option>Tee mit Honig</option>
+            <option>Überrasch mich</option>
+          </select>
+        </div>
+
+        <div class="detail" role="radiogroup" aria-labelledby="dress-label">
+          <p class="detail-label" id="dress-label">Dresscode?</p>
+          <div class="chips">
+            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-kuschel" value="Jogginghose &amp; Kuschelsocken"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Jogginghose &amp; Kuschelsocken</span></label>
+            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-warm" value="Mütze, Schal &amp; dicke Jacke"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Mütze, Schal &amp; dicke Jacke</span></label>
+            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-schick" value="Ein bisschen schick"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Ein bisschen schick</span></label>
+            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-richtig" value="Richtig schick"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Richtig schick</span></label>
+          </div>
+        </div>
+
+        <div class="detail">
+          <label class="detail-label" for="wish">Noch ein Wunsch oder eine Idee?</label>
+          <textarea class="wish" id="wish" name="wish" maxlength="300" rows="3" autocapitalize="sentences" placeholder="z. B. Danach noch eine heiße Schokolade?"></textarea>
+          <span class="wish-count" id="wish-count" aria-hidden="true">0 / 300</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="to-finale">Fertig!</button>
+        <button type="button" class="btn-text" data-go="plan">Zurück</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · Neon-Herz -->
+  <section class="scene scene-finale" id="scene-finale" aria-labelledby="love-title" hidden>
+    <div class="wrap">
+      <svg class="neon-heart" viewBox="0 0 240 180" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="wide"/>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="near"/>
+            <feMerge><feMergeNode in="wide"/><feMergeNode in="near"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g transform="translate(20 0)">
+          <path d="M96 156C40 118 12 88 18 56C24 26 62 16 84 38C92 46 97 54 100 60C103 54 108 46 116 38C138 16 176 26 182 56C188 88 162 116 108 152" fill="none" stroke="#ff5fae" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+          <path d="M96 156C40 118 12 88 18 56C24 26 62 16 84 38C92 46 97 54 100 60C103 54 108 46 116 38C138 16 176 26 182 56C188 88 162 116 108 152" fill="none" stroke="#ffe9f4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g transform="translate(18 34)">
+            <path d="M0 -12V12M-10.4 -6L10.4 6M-10.4 6L10.4 -6M-3 -9.5L0 -6.5L3 -9.5M-3 9.5L0 6.5L3 9.5" stroke="#8ae6ff" stroke-width="5" filter="url(#glow)"/>
+            <path d="M0 -12V12M-10.4 -6L10.4 6M-10.4 6L10.4 -6M-3 -9.5L0 -6.5L3 -9.5M-3 9.5L0 6.5L3 9.5" stroke="#effdff" stroke-width="1.8"/>
+          </g>
+          <g transform="translate(222 126) scale(.8)">
+            <path d="M0 -12V12M-10.4 -6L10.4 6M-10.4 6L10.4 -6M-3 -9.5L0 -6.5L3 -9.5M-3 9.5L0 6.5L3 9.5" stroke="#8ae6ff" stroke-width="5" filter="url(#glow)"/>
+            <path d="M0 -12V12M-10.4 -6L10.4 6M-10.4 6L10.4 -6M-3 -9.5L0 -6.5L3 -9.5M-3 9.5L0 6.5L3 9.5" stroke="#effdff" stroke-width="1.8"/>
+          </g>
+        </g>
+      </svg>
+      <h1 class="love" id="love-title" tabindex="-1" data-heading>Ich freu mich auf dich</h1>
+      <p class="love-sub" id="finale-date"></p>
+
+      <div class="panel">
+        <h2 class="plan-title">Unser Winter-Date</h2>
+        <dl class="plan-list" id="plan-list"></dl>
+      </div>
+
+      <p class="preview-label">So kommt’s bei mir an</p>
+      <p class="bubble" id="preview"></p>
+      <div class="actions">
+        <a class="btn btn-primary" id="send" href="https://wa.me/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M3 10.2L16.6 3.6c.5-.2 1 .2.8.7L13.1 17c-.2.5-.9.6-1.2.1l-2.4-4.3a1 1 0 00-.4-.4L4.8 10a.6.6 0 01-.1-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.3 11.6l3.6-3.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Per WhatsApp zusagen
+        </a>
+        <button type="button" class="btn btn-ghost" id="copy">Text kopieren</button>
+      </div>
+      <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      <div class="links">
+        <button type="button" class="btn-text" data-go="plan">Auswahl ändern</button>
+        <button type="button" class="btn-text" id="restart">Licht aus &amp; nochmal</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'winter-date-night-v1';
+  var STEPS = ['wall', 'plan', 'details', 'finale'];
+  var SELECTS = ['markt', 'therme', 'rodel', 'restaurant', 'dish', 'genre', 'drink'];
+  var RADIOS = ['fall', 'dress'];
+  // Zeiträume für den Winter 2026/27
+  var GARDEN = { from: '2026-11-18', to: '2027-01-16' };
+  var ICE_MONTHS = [10, 11, 12, 1, 2, 3];
+
+  function $(id) { return document.getElementById(id); }
+  var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  function reduced() { return !!(mq && mq.matches); }
+
+  var scenes = {};
+  STEPS.forEach(function (s) { scenes[s] = $('scene-' + s); });
+  var current = 'wall';
+  var state = { accept: '', lit: false };
+  var stepLock = 0;
+  var timers = [];
+
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function inputs(name) { return Array.prototype.slice.call(document.querySelectorAll('input[name="' + name + '"]')); }
+  function checked(name) { return inputs(name).filter(function (el) { return el.checked; }); }
+  function isOn(id) { var el = $(id); return !!(el && el.checked); }
+  function radioValue(name) { var el = checked(name)[0]; return el ? el.value : ''; }
+
+  /* ---------- Speichern ---------- */
+  function save() {
+    try {
+      var data = { v: 1, accept: state.accept, act: checked('act').map(function (el) { return el.id; }), wish: $('wish').value.slice(0, 300) };
+      RADIOS.forEach(function (n) { data[n] = checked(n).map(function (el) { return el.id; }); });
+      SELECTS.forEach(function (id) { data[id] = $(id).value; });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* ohne Speicher geht es auch */ }
+  }
+
+  function restore() {
+    var data = null;
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { data = null; }
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return;
+    ['act'].concat(RADIOS).forEach(function (n) {
+      var ids = Array.isArray(data[n]) ? data[n] : [];
+      inputs(n).forEach(function (el) { el.checked = ids.indexOf(el.id) !== -1; });
+    });
+    SELECTS.forEach(function (id) {
+      var v = data[id];
+      if (typeof v !== 'string') return;
+      var sel = $(id);
+      var ok = Array.prototype.some.call(sel.options, function (o) { return o.value === v; });
+      if (ok) sel.value = v;
+    });
+    if (typeof data.wish === 'string') $('wish').value = data.wish.slice(0, 300);
+    if (data.accept === 'ja' || data.accept === 'aussuchen') state.accept = data.accept;
+  }
+
+  /* ---------- Datum: immer der Tag, an dem die Seite angeschaut wird ---------- */
+  var fmtLong = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  var fmtDayMonth = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' });
+  var fmtWeekdayShort = new Intl.DateTimeFormat('de-DE', { weekday: 'short' });
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function shortDate(d) { return fmtWeekdayShort.format(d) + ', ' + pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.'; }
+  function dm(d) { return d.getDate() + '.' + (d.getMonth() + 1) + '.'; }
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function parseISO(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+
+  function updateDate() {
+    var now = new Date();
+    $('lb-date').textContent = fmtLong.format(now);
+    $('finale-date').textContent = 'Heute, ' + fmtLong.format(now) + '. Zieh dich warm an.';
+    applySeasons();
+    if (current === 'finale') updateFinale();
+  }
+  function scheduleMidnight() {
+    var now = new Date();
+    var next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+    setTimeout(function () { updateDate(); scheduleMidnight(); }, Math.max(1000, next - now));
+  }
+
+  /* ---------- Was geht heute? (Weihnachtsmärkte, Lichter, Eiswelt …) ---------- */
+  function setTile(id, ok, note) {
+    var input = $(id);
+    var label = input.closest('.act');
+    var noteEl = label.querySelector('.act-note');
+    input.disabled = !ok;
+    if (!ok) input.checked = false;
+    label.classList.toggle('off', !ok);
+    noteEl.textContent = ok ? '' : note;
+    noteEl.hidden = ok;
+  }
+
+  function applySeasons() {
+    var today = startOfDay(new Date());
+
+    // Weihnachtsmärkte: jeder hat seine eigenen Tage
+    var sel = $('markt');
+    var anyOpen = false;
+    var nextFrom = null;
+    Array.prototype.forEach.call(sel.options, function (o) {
+      if (!o.getAttribute('data-from')) return;
+      var from = parseISO(o.getAttribute('data-from'));
+      var to = parseISO(o.getAttribute('data-to'));
+      var label = o.getAttribute('data-label');
+      var open = today >= from && today <= to;
+      o.disabled = !open;
+      if (open) {
+        anyOpen = true;
+        o.textContent = label + ' (bis ' + dm(to) + ')';
+      } else if (today < from) {
+        o.textContent = label + ' (ab ' + dm(from) + ')';
+        if (!nextFrom || from < nextFrom) nextFrom = from;
+      } else {
+        o.textContent = label + ' (vorbei)';
+      }
+    });
+    var any = sel.querySelector('option[data-any]');
+    if (any) any.disabled = !anyOpen;
+    var picked = sel.options[sel.selectedIndex];
+    if (picked && picked.disabled) sel.value = '';
+    setTile('act-markt', anyOpen, nextFrom ? 'Hat ab ' + fmtDayMonth.format(nextFrom) + ' offen.' : 'Für dieses Jahr schon vorbei.');
+
+    // Christmas Garden in der Wilhelma
+    var gFrom = parseISO(GARDEN.from);
+    var gTo = parseISO(GARDEN.to);
+    var gOpen = today >= gFrom && today <= gTo;
+    setTile('act-garden', gOpen, today < gFrom ? 'Leuchtet ab ' + fmtDayMonth.format(gFrom) + '.' : 'Für diesen Winter schon vorbei.');
+
+    // Eiswelt: Oktober bis März
+    var iceOpen = ICE_MONTHS.indexOf(today.getMonth() + 1) !== -1;
+    setTile('act-eis', iceOpen, 'Die Eiswelt hat ab Oktober wieder offen.');
+
+    // Fernsehturm: an Heiligabend zu
+    var xmasEve = today.getMonth() === 11 && today.getDate() === 24;
+    setTile('act-turm', !xmasEve, 'An Heiligabend zu.');
+  }
+
+  /* ---------- Navigation ---------- */
+  function go(step, push) {
+    if (STEPS.indexOf(step) === -1) step = 'wall';
+    clearTimers();
+    STEPS.forEach(function (s) {
+      scenes[s].hidden = s !== step;
+      scenes[s].classList.remove('enter');
+    });
+    var scene = scenes[step];
+    void scene.offsetWidth;
+    if (!reduced()) scene.classList.add('enter');
+    current = step;
+    stepLock = performance.now() + 400;
+    if (push !== false) { try { history.pushState({ step: step }, ''); } catch (e) { /* egal */ } }
+
+    if (step === 'wall') resetAccept();
+    if (step === 'plan') applySeasons();
+    if (step === 'details') showDetails();
+    if (step === 'finale') { updateFinale(); playFinale(); }
+
+    window.scrollTo(0, 0);
+    var h = scene.querySelector('[data-heading]');
+    if (h) { try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }
+  }
+
+  /* ---------- 1 · Licht an ---------- */
+  function lightOn() {
+    if (state.lit) return;
+    state.lit = true;
+    var sign = $('sign');
+    document.body.classList.add('lit');
+    sign.classList.add('on');
+    if (!reduced()) sign.classList.add('flicker');
+    $('pull').setAttribute('aria-label', 'Licht flackern lassen');
+    $('before-light').hidden = true;
+    var reveal = function () {
+      $('after-light').hidden = false;
+      var sc = scenes.wall;
+      sc.classList.remove('lit-in');
+      void sc.offsetWidth;
+      if (!reduced()) sc.classList.add('lit-in');
+    };
+    if (reduced()) reveal(); else later(reveal, 1300);
+  }
+
+  function pullCord() {
+    var pull = $('pull');
+    pull.classList.add('tug');
+    setTimeout(function () { pull.classList.remove('tug'); }, 260);
+    if (!state.lit) {
+      setTimeout(lightOn, reduced() ? 0 : 220);
+    } else if (!reduced()) {
+      // schon an: einmal kurz flackern lassen
+      var sign = $('sign');
+      sign.classList.remove('flicker');
+      void sign.offsetWidth;
+      sign.classList.add('flicker');
+    }
+  }
+
+  function lightOff() {
+    state.lit = false;
+    var sign = $('sign');
+    document.body.classList.remove('lit');
+    sign.classList.remove('on', 'flicker');
+    scenes.wall.classList.remove('lit-in');
+    $('pull').setAttribute('aria-label', 'Licht anschalten');
+    $('before-light').hidden = false;
+    $('after-light').hidden = true;
+  }
+
+  function resetAccept() {
+    $('accept-ja').disabled = false;
+    $('accept-aussuchen').disabled = false;
+    $('accept-note').textContent = '';
+  }
+
+  function accept(kind) {
+    state.accept = kind;
+    save();
+    $('accept-ja').disabled = true;
+    $('accept-aussuchen').disabled = true;
+    if (kind === 'aussuchen') {
+      $('accept-note').textContent = 'Gute Antwort. Dann such’s dir aus.';
+      later(function () { go('plan'); }, reduced() ? 900 : 1400);
+    } else {
+      go('plan');
+    }
+  }
+
+  /* ---------- 3 · Details ---------- */
+  var DETAIL_FOR = {
+    'sec-markt': 'act-markt',
+    'sec-therme': 'act-therme',
+    'sec-rodel': 'act-rodel',
+    'sec-eis': 'act-eis',
+    'sec-restaurant': 'act-essen',
+    'sec-dish': 'act-kochen',
+    'sec-genre': 'act-film'
+  };
+  function showDetails() {
+    Object.keys(DETAIL_FOR).forEach(function (sec) { $(sec).hidden = !isOn(DETAIL_FOR[sec]); });
+  }
+
+  /* ---------- 4 · Finale ---------- */
+  function tidy(s) {
+    return String(s || '').replace(/\s*\n\s*/g, ' / ').replace(/[ \t]+/g, ' ').trim().slice(0, 300);
+  }
+  function upperFirst(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function pick(selectId, actId) { return isOn(actId) ? $(selectId).value : null; }
+
+  function collect() {
+    var acts = checked('act');
+    return {
+      acts: acts.filter(function (el) { return el.id !== 'act-ueberrasch'; }).map(function (el) { return el.value; }),
+      surprise: isOn('act-ueberrasch'),
+      markt: pick('markt', 'act-markt'),
+      therme: pick('therme', 'act-therme'),
+      rodel: pick('rodel', 'act-rodel'),
+      fall: isOn('act-eis') ? radioValue('fall') : null,
+      restaurant: pick('restaurant', 'act-essen'),
+      dish: pick('dish', 'act-kochen'),
+      genre: pick('genre', 'act-film'),
+      drink: $('drink').value,
+      dress: radioValue('dress'),
+      wish: tidy($('wish').value),
+      curious: state.accept === 'aussuchen'
+    };
+  }
+
+  function actsLine(c) {
+    if (c.acts.length) return c.acts.join(', ') + (c.surprise ? ' – und überrasch mich' : '');
+    return c.surprise ? 'Überrasch mich!' : '';
+  }
+
+  function buildMessage(c) {
+    var lines = ['Winter-Date am ' + shortDate(new Date()) + ' ❄️'];
+    lines.push(c.curious ? 'Ich bin dabei! (Ich durfte ja aussuchen.)' : 'Ich bin dabei!');
+    if (actsLine(c)) lines.push('Was wir machen: ' + actsLine(c));
+    if (c.markt) lines.push('Weihnachtsmarkt: ' + c.markt);
+    if (c.therme) lines.push('Therme: ' + c.therme);
+    if (c.rodel) lines.push('Rodeln: ' + c.rodel + ' (sobald Schnee liegt)');
+    if (c.fall) lines.push('Wer beim Eislaufen zuerst hinfällt: ' + c.fall);
+    if (c.restaurant) lines.push('Restaurant: ' + c.restaurant);
+    if (c.dish) lines.push('Wir kochen: ' + c.dish);
+    if (c.genre) lines.push('Film: ' + c.genre);
+    if (c.drink) lines.push('Zum Aufwärmen: ' + c.drink);
+    if (c.dress) lines.push('Dresscode: ' + c.dress);
+    if (c.wish) lines.push('Mein Wunsch: ' + c.wish);
+    lines.push('Ich freu mich auf dich ❤️');
+    return lines.join('\n');
+  }
+
+  function updateFinale() {
+    var c = collect();
+    var rows = [['Wann', 'Heute, ' + fmtLong.format(new Date())], ['Was', actsLine(c)]];
+    if (c.markt !== null) rows.push(['Weihnachtsmarkt', c.markt]);
+    if (c.therme !== null) rows.push(['Therme', c.therme]);
+    if (c.rodel !== null) rows.push(['Rodeln', c.rodel ? c.rodel + ' (sobald Schnee liegt)' : '']);
+    if (c.fall !== null) rows.push(['Wer zuerst hinfällt', upperFirst(c.fall)]);
+    if (c.restaurant !== null) rows.push(['Restaurant', c.restaurant]);
+    if (c.dish !== null) rows.push(['Wir kochen', c.dish]);
+    if (c.genre !== null) rows.push(['Film', c.genre]);
+    rows.push(['Zum Aufwärmen', c.drink]);
+    rows.push(['Dresscode', c.dress]);
+    if (c.wish) rows.push(['Dein Wunsch', c.wish]);
+    var dl = $('plan-list');
+    dl.textContent = '';
+    rows.forEach(function (r) {
+      var div = document.createElement('div');
+      div.className = 'plan-row';
+      var dt = document.createElement('dt');
+      dt.textContent = r[0];
+      var dd = document.createElement('dd');
+      dd.textContent = r[1] || 'noch offen';
+      if (!r[1]) dd.className = 'open';
+      div.appendChild(dt);
+      div.appendChild(dd);
+      dl.appendChild(div);
+    });
+    var msg = buildMessage(c);
+    $('preview').textContent = msg;
+    $('send').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  }
+
+  function playFinale() {
+    var s = scenes.finale;
+    s.classList.remove('play');
+    void s.offsetWidth;
+    if (!reduced()) s.classList.add('play');
+  }
+
+  function setStatus(text) { $('copy-status').textContent = text; }
+
+  function copyText() {
+    var msg = $('preview').textContent;
+    function fallback() {
+      var ok = false;
+      try {
+        var range = document.createRange();
+        range.selectNodeContents($('preview'));
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ok = !!(document.execCommand && document.execCommand('copy'));
+      } catch (e) { ok = false; }
+      if (ok) {
+        setStatus('Kopiert! Jetzt einfach in unseren Chat einfügen.');
+      } else {
+        try { $('preview').scrollIntoView({ block: 'center' }); } catch (e) { /* egal */ }
+        setStatus('Der Text ist markiert – kopier ihn einfach selbst.');
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg).then(function () {
+        setStatus('Kopiert! Jetzt einfach in unseren Chat einfügen.');
+      }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  /* ---------- Schnee ---------- */
+  function startSnow() {
+    var canvas = $('snow');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var flakes = [];
+    var w = 0, h = 0, raf = 0, last = 0;
+
+    function make(anywhere) {
+      return {
+        x: Math.random() * w,
+        y: anywhere ? Math.random() * h : -6,
+        r: .7 + Math.random() * 2.1,
+        vy: .25 + Math.random() * .7,
+        ph: Math.random() * 6.28,
+        sw: .4 + Math.random() * .9,
+        a: .3 + Math.random() * .5
+      };
+    }
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#fff';
+      for (var i = 0; i < flakes.length; i++) {
+        var f = flakes[i];
+        ctx.globalAlpha = f.a;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function resize() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var target = Math.max(36, Math.min(130, Math.round(w * h / 8500)));
+      while (flakes.length < target) flakes.push(make(true));
+      flakes.length = target;
+      draw();
+    }
+    function step(t) {
+      var dt = last ? Math.min(48, t - last) / 16.7 : 1;
+      last = t;
+      for (var i = 0; i < flakes.length; i++) {
+        var f = flakes[i];
+        f.y += f.vy * dt * (f.r / 1.6);
+        f.x += Math.sin(t / 1400 * f.sw + f.ph) * .35 * dt;
+        if (f.y > h + 6) flakes[i] = make(false);
+        else if (f.x < -6) f.x = w + 6;
+        else if (f.x > w + 6) f.x = -6;
+      }
+      draw();
+      raf = requestAnimationFrame(step);
+    }
+    function start() {
+      if (raf || reduced() || document.hidden) return;
+      last = 0;
+      raf = requestAnimationFrame(step);
+    }
+    function stop() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if (mq && mq.addEventListener) {
+      mq.addEventListener('change', function () { if (reduced()) { stop(); draw(); } else start(); });
+    }
+    start();
+  }
+
+  /* ---------- Ereignisse ---------- */
+  // Ein schneller zweiter Tipp soll nicht schon im nächsten Schritt landen
+  document.addEventListener('click', function (e) {
+    if (e.detail > 0 && performance.now() < stepLock) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  $('pull').addEventListener('click', pullCord);
+  $('light-btn').addEventListener('click', lightOn);
+  $('sign-title').addEventListener('click', function () { if (state.lit) pullCord(); });
+  $('accept-ja').addEventListener('click', function () { accept('ja'); });
+  $('accept-aussuchen').addEventListener('click', function () { accept('aussuchen'); });
+
+  inputs('act').forEach(function (el) {
+    el.addEventListener('change', function () {
+      if (checked('act').length) $('plan-error').textContent = '';
+      save();
+    });
+  });
+  $('to-details').addEventListener('click', function () {
+    if (!checked('act').length) {
+      $('plan-error').textContent = 'Such dir mindestens eine Sache aus – oder „Überrasch mich“.';
+      var first = inputs('act').filter(function (el) { return !el.disabled; })[0];
+      if (first) first.focus();
+      return;
+    }
+    go('details');
+  });
+
+  SELECTS.forEach(function (id) { $(id).addEventListener('change', save); });
+  RADIOS.forEach(function (n) { inputs(n).forEach(function (el) { el.addEventListener('change', save); }); });
+  $('wish').addEventListener('input', function () {
+    $('wish-count').textContent = $('wish').value.length + ' / 300';
+    save();
+  });
+  $('to-finale').addEventListener('click', function () { go('finale'); });
+
+  $('copy').addEventListener('click', copyText);
+  $('restart').addEventListener('click', function () { lightOff(); go('wall'); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-go]'), function (btn) {
+    btn.addEventListener('click', function () { go(btn.getAttribute('data-go')); });
+  });
+
+  window.addEventListener('popstate', function (e) {
+    var s = e.state && e.state.step;
+    go(STEPS.indexOf(s) !== -1 ? s : 'wall', false);
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) updateDate();
+  });
+
+  /* ---------- Start ---------- */
+  try { history.scrollRestoration = 'manual'; } catch (e) { /* egal */ }
+  try { history.replaceState({ step: 'wall' }, ''); } catch (e) { /* egal */ }
+  restore();
+  $('wish-count').textContent = $('wish').value.length + ' / 300';
+  updateDate();
+  scheduleMidnight();
+  startSnow();
+})();
+</script>
+</body>
+</html>
