@@ -357,7 +357,7 @@
   .act.wide { grid-column: 1 / -1; }
   @media (min-width: 560px) { .act.wide { grid-column: span 2; } }
   .act.wide .act-face { min-height: 0; }
-  .act input, .chip input {
+  .act input, .chip input, .market input {
     -webkit-appearance: none;
     appearance: none;
     position: absolute;
@@ -406,11 +406,12 @@
   .act input:checked + .act-face svg { color: var(--c); filter: drop-shadow(0 0 4px var(--c)) drop-shadow(0 0 10px var(--c)); }
   .act input:checked + .act-face .act-name { color: #fff; text-shadow: 0 0 10px var(--c); }
   .act input:checked + .act-face::after,
-  .chip input:checked + .chip-face .mark {
+  .chip input:checked + .chip-face .mark,
+  .market input:checked + .market-face .mark {
     border-color: var(--c, var(--pink));
     background: var(--c, var(--pink)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.3l2.2 2.2 4.8-5' fill='none' stroke='%230b0d12' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
   }
-  .act input:focus-visible + .act-face, .chip input:focus-visible + .chip-face { outline: 3px solid var(--ice); outline-offset: 2px; }
+  .act input:focus-visible + .act-face, .chip input:focus-visible + .chip-face, .market input:focus-visible + .market-face { outline: 3px solid var(--ice); outline-offset: 2px; }
   /* Aktivitäten, die heute nicht gehen */
   .act.off input { cursor: not-allowed; }
   .act.off .act-face { border-style: dashed; }
@@ -465,6 +466,56 @@
   .chip input:checked + .chip-face { border-color: var(--pink); box-shadow: 0 0 14px -4px var(--pink); }
   .mark { flex: none; width: 20px; height: 20px; border: 1.5px solid rgba(225, 238, 255, .5); border-radius: 50%; }
   .chip-radio input:checked + .chip-face .mark { background: radial-gradient(circle, #0b0d12 0 3px, var(--pink) 3.5px); }
+
+  /* Dresscode-Liste */
+  .dress-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .dress-list li {
+    position: relative;
+    padding-left: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .dress-list li::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: calc(.7em - 4px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ice);
+    box-shadow: 0 0 6px var(--ice), 0 0 12px var(--ice-deep);
+  }
+
+  /* Weihnachtsmärkte: ganze Zeile antippbar, rechts die Tage */
+  .markets { display: grid; gap: 8px; }
+  .market { position: relative; display: block; }
+  .market-face {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 10px 14px 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    background: rgba(12, 16, 24, .6);
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .market-text { display: grid; gap: 1px; min-width: 0; }
+  .market-name { font-weight: 800; font-size: 1rem; line-height: 1.25; }
+  .market-meta { font-size: .84rem; line-height: 1.3; color: var(--text-dim); }
+  .market-date { display: grid; justify-items: end; gap: 1px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .md-top { font-weight: 800; font-size: .9rem; color: #9ce8ff; }
+  .md-bottom { font-size: .8rem; color: var(--text-dim); }
+  .market.is-open .md-top { color: var(--mint); }
+  .market input:checked + .market-face { border-color: var(--pink); box-shadow: 0 0 14px -4px var(--pink); }
+  .market input:disabled { cursor: not-allowed; }
+  .market input:disabled + .market-face { opacity: .45; border-style: dashed; }
+  @media (hover: hover) {
+    .market:hover input:not(:disabled) + .market-face { border-color: rgba(225, 238, 255, .5); }
+    .market:hover input:checked + .market-face { border-color: var(--pink); }
+  }
   .wish {
     display: block;
     width: 100%;
@@ -505,7 +556,7 @@
   .plan-list { display: grid; gap: 12px; margin: 0; }
   .plan-row { display: grid; gap: 2px; }
   .plan-row dt { font: 800 .74rem/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: #9ce8ff; }
-  .plan-row dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .plan-row dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; white-space: pre-line; }
   .plan-row dd.open { color: var(--text-dim); font-style: italic; font-weight: 400; }
   .preview-label {
     margin: 4px 0 0;
@@ -649,19 +700,18 @@
       <h1 class="title" id="details-heading" tabindex="-1" data-heading>Noch ein paar Details</h1>
 
       <div class="panel">
-        <div class="detail" id="sec-markt" hidden>
-          <label class="detail-label" for="markt">Welcher Weihnachtsmarkt?</label>
-          <p class="detail-sub">Alle in und um Stuttgart.</p>
-          <select class="select" id="markt" name="markt">
-            <option value="">Bitte auswählen …</option>
-            <option value="Stuttgarter Weihnachtsmarkt" data-label="Stuttgarter Weihnachtsmarkt" data-from="2026-11-25" data-to="2026-12-23">Stuttgarter Weihnachtsmarkt</option>
-            <option value="Cannstatter Sternenmarkt" data-label="Cannstatter Sternenmarkt" data-from="2026-11-25" data-to="2026-12-23">Cannstatter Sternenmarkt</option>
-            <option value="Esslinger Mittelalter- &amp; Weihnachtsmarkt" data-label="Esslinger Mittelalter- &amp; Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22">Esslinger Mittelalter- &amp; Weihnachtsmarkt</option>
-            <option value="Ludwigsburger Barock-Weihnachtsmarkt" data-label="Ludwigsburger Barock-Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22">Ludwigsburger Barock-Weihnachtsmarkt</option>
-            <option value="Stuttgarter Waldweihnacht (Degerloch)" data-label="Waldweihnacht in Degerloch" data-from="2026-12-04" data-to="2026-12-05">Waldweihnacht in Degerloch</option>
-            <option value="chocolART Schokoladenfestival (Tübingen)" data-label="chocolART Schokoladenfestival (Tübingen)" data-from="2026-12-01" data-to="2026-12-06">chocolART Schokoladenfestival (Tübingen)</option>
-            <option value="Überrasch mich" data-any>Überrasch mich</option>
-          </select>
+        <div class="detail" id="sec-markt" role="group" aria-labelledby="markt-label" hidden>
+          <p class="detail-label" id="markt-label">Welcher Weihnachtsmarkt?</p>
+          <p class="detail-sub">Gern auch mehrere. Rechts steht, wann sie aufmachen.</p>
+          <div class="markets">
+            <label class="market"><input type="checkbox" name="markt" id="markt-stuttgart" value="Stuttgarter Weihnachtsmarkt" data-from="2026-11-25" data-to="2026-12-23"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Stuttgart</span><span class="market-meta">Schlossplatz &amp; Marktplatz</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-cannstatt" value="Cannstatter Sternenmarkt" data-from="2026-11-25" data-to="2026-12-23"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Bad Cannstatt</span><span class="market-meta">Sternenmarkt</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-esslingen" value="Esslinger Mittelalter- &amp; Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Esslingen</span><span class="market-meta">Mittelalter- &amp; Weihnachtsmarkt</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-ludwigsburg" value="Ludwigsburger Barock-Weihnachtsmarkt" data-from="2026-11-24" data-to="2026-12-22"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Ludwigsburg</span><span class="market-meta">Barock-Weihnachtsmarkt</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-degerloch" value="Waldweihnacht in Degerloch" data-from="2026-12-04" data-to="2026-12-05"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Degerloch</span><span class="market-meta">Waldweihnacht mitten im Wald</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-tuebingen" value="chocolART in Tübingen" data-from="2026-12-01" data-to="2026-12-06"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Tübingen</span><span class="market-meta">chocolART Schokoladenfestival</span></span><span class="market-date"><span class="md-top"></span><span class="md-bottom"></span></span></span></label>
+            <label class="market"><input type="checkbox" name="markt" id="markt-ueberrasch" value="Überrasch mich"><span class="market-face"><span class="mark" aria-hidden="true"></span><span class="market-text"><span class="market-name">Überrasch mich</span><span class="market-meta">Such du einen aus.</span></span><span class="market-date"></span></span></label>
+          </div>
         </div>
 
         <div class="detail" id="sec-therme" hidden>
@@ -802,14 +852,10 @@
           </select>
         </div>
 
-        <div class="detail" role="radiogroup" aria-labelledby="dress-label">
-          <p class="detail-label" id="dress-label">Dresscode?</p>
-          <div class="chips">
-            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-kuschel" value="Jogginghose &amp; Kuschelsocken"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Jogginghose &amp; Kuschelsocken</span></label>
-            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-warm" value="Mütze, Schal &amp; dicke Jacke"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Mütze, Schal &amp; dicke Jacke</span></label>
-            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-schick" value="Ein bisschen schick"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Ein bisschen schick</span></label>
-            <label class="chip chip-radio"><input type="radio" name="dress" id="dress-richtig" value="Richtig schick"><span class="chip-face"><span class="mark" aria-hidden="true"></span>Richtig schick</span></label>
-          </div>
+        <div class="detail" id="sec-dress">
+          <p class="detail-label">Dein Dresscode</p>
+          <p class="detail-sub">Passt sich dem an, was du ausgesucht hast.</p>
+          <ul class="dress-list" id="dress-list" aria-live="polite"></ul>
         </div>
 
         <div class="detail">
@@ -885,11 +931,18 @@
 
   var KEY = 'winter-date-night-v1';
   var STEPS = ['wall', 'plan', 'details', 'finale'];
-  var SELECTS = ['markt', 'therme', 'rodel', 'restaurant', 'dish', 'genre', 'drink'];
-  var RADIOS = ['fall', 'dress'];
+  var SELECTS = ['therme', 'rodel', 'restaurant', 'dish', 'genre', 'drink'];
+  var CHECKS = ['act', 'markt'];
+  var RADIOS = ['fall'];
   // Zeiträume für den Winter 2026/27
   var GARDEN = { from: '2026-11-18', to: '2027-01-16' };
   var ICE_MONTHS = [10, 11, 12, 1, 2, 3];
+  // Dresscode: wo es draußen kalt wird
+  var COLD = ['act-markt', 'act-garden', 'act-turm', 'act-spaziergang', 'act-rodel', 'act-eis'];
+  var JACKET = ['act-markt', 'act-garden', 'act-turm', 'act-spaziergang', 'act-rodel'];
+  var SHOES = ['act-markt', 'act-garden', 'act-spaziergang'];
+  var FANCY = ['Christophorus (Porsche Museum)', 'CUBE im Kunstmuseum'];
+  var CASUAL = ['Udo Snack', 'Houston’s Fine Burrito Company'];
 
   function $(id) { return document.getElementById(id); }
   var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -899,6 +952,7 @@
   STEPS.forEach(function (s) { scenes[s] = $('scene-' + s); });
   var current = 'wall';
   var state = { accept: '', lit: false };
+  var opensLater = {}; // Aktivitäten, die erst später aufmachen: id -> { date, label }
   var stepLock = 0;
   var timers = [];
 
@@ -913,8 +967,8 @@
   /* ---------- Speichern ---------- */
   function save() {
     try {
-      var data = { v: 1, accept: state.accept, act: checked('act').map(function (el) { return el.id; }), wish: $('wish').value.slice(0, 300) };
-      RADIOS.forEach(function (n) { data[n] = checked(n).map(function (el) { return el.id; }); });
+      var data = { v: 2, accept: state.accept, wish: $('wish').value.slice(0, 300) };
+      CHECKS.concat(RADIOS).forEach(function (n) { data[n] = checked(n).map(function (el) { return el.id; }); });
       SELECTS.forEach(function (id) { data[id] = $(id).value; });
       localStorage.setItem(KEY, JSON.stringify(data));
     } catch (e) { /* ohne Speicher geht es auch */ }
@@ -927,7 +981,7 @@
       if (raw) data = JSON.parse(raw);
     } catch (e) { data = null; }
     if (!data || typeof data !== 'object' || Array.isArray(data)) return;
-    ['act'].concat(RADIOS).forEach(function (n) {
+    CHECKS.concat(RADIOS).forEach(function (n) {
       var ids = Array.isArray(data[n]) ? data[n] : [];
       inputs(n).forEach(function (el) { el.checked = ids.indexOf(el.id) !== -1; });
     });
@@ -953,10 +1007,9 @@
   function parseISO(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
 
   function updateDate() {
-    var now = new Date();
-    $('lb-date').textContent = fmtLong.format(now);
-    $('finale-date').textContent = 'Heute, ' + fmtLong.format(now) + '. Zieh dich warm an.';
+    $('lb-date').textContent = fmtLong.format(new Date());
     applySeasons();
+    if (current === 'details') updateDress();
     if (current === 'finale') updateFinale();
   }
   function scheduleMidnight() {
@@ -965,61 +1018,81 @@
     setTimeout(function () { updateDate(); scheduleMidnight(); }, Math.max(1000, next - now));
   }
 
-  /* ---------- Was geht heute? (Weihnachtsmärkte, Lichter, Eiswelt …) ---------- */
-  function setTile(id, ok, note) {
+  /* ---------- Was hat heute offen, was erst später? ---------- */
+  // status: 'open' (geht heute), 'soon' (schon wählbar, macht später auf), 'off' (geht nicht)
+  function setTile(id, status, note) {
     var input = $(id);
     var label = input.closest('.act');
     var noteEl = label.querySelector('.act-note');
-    input.disabled = !ok;
-    if (!ok) input.checked = false;
-    label.classList.toggle('off', !ok);
-    noteEl.textContent = ok ? '' : note;
-    noteEl.hidden = ok;
+    var off = status === 'off';
+    input.disabled = off;
+    if (off) input.checked = false;
+    label.classList.toggle('off', off);
+    label.classList.toggle('soon', status === 'soon');
+    noteEl.textContent = status === 'open' ? '' : (note || '');
+    noteEl.hidden = status === 'open';
   }
 
   function applySeasons() {
     var today = startOfDay(new Date());
+    opensLater = {};
 
     // Weihnachtsmärkte: jeder hat seine eigenen Tage
-    var sel = $('markt');
     var anyOpen = false;
+    var anyLeft = false;
     var nextFrom = null;
-    Array.prototype.forEach.call(sel.options, function (o) {
-      if (!o.getAttribute('data-from')) return;
-      var from = parseISO(o.getAttribute('data-from'));
-      var to = parseISO(o.getAttribute('data-to'));
-      var label = o.getAttribute('data-label');
-      var open = today >= from && today <= to;
-      o.disabled = !open;
-      if (open) {
-        anyOpen = true;
-        o.textContent = label + ' (bis ' + dm(to) + ')';
-      } else if (today < from) {
-        o.textContent = label + ' (ab ' + dm(from) + ')';
-        if (!nextFrom || from < nextFrom) nextFrom = from;
-      } else {
-        o.textContent = label + ' (vorbei)';
-      }
+    inputs('markt').forEach(function (el) {
+      var f = el.getAttribute('data-from');
+      if (!f) return;
+      var from = parseISO(f);
+      var to = parseISO(el.getAttribute('data-to'));
+      var past = today > to;
+      var open = !past && today >= from;
+      var row = el.closest('.market');
+      el.disabled = past;
+      if (past) el.checked = false;
+      row.classList.toggle('is-open', open);
+      row.querySelector('.md-top').textContent = past ? 'vorbei' : (open ? 'jetzt offen' : 'ab ' + dm(from));
+      row.querySelector('.md-bottom').textContent = past ? '' : 'bis ' + dm(to);
+      if (open) anyOpen = true;
+      if (!past) anyLeft = true;
+      if (!past && !open && (!nextFrom || from < nextFrom)) nextFrom = from;
     });
-    var any = sel.querySelector('option[data-any]');
-    if (any) any.disabled = !anyOpen;
-    var picked = sel.options[sel.selectedIndex];
-    if (picked && picked.disabled) sel.value = '';
-    setTile('act-markt', anyOpen, nextFrom ? 'Hat ab ' + fmtDayMonth.format(nextFrom) + ' offen.' : 'Für dieses Jahr schon vorbei.');
+    var anyMarket = $('markt-ueberrasch');
+    anyMarket.disabled = !anyLeft;
+    if (!anyLeft) anyMarket.checked = false;
+    if (anyOpen) {
+      setTile('act-markt', 'open');
+    } else if (nextFrom) {
+      setTile('act-markt', 'soon', 'Hat ab ' + fmtDayMonth.format(nextFrom) + ' offen.');
+      opensLater['act-markt'] = { date: nextFrom, label: 'ab ' + dm(nextFrom) };
+    } else {
+      setTile('act-markt', 'off', 'Für dieses Jahr schon vorbei.');
+    }
 
     // Christmas Garden in der Wilhelma
     var gFrom = parseISO(GARDEN.from);
     var gTo = parseISO(GARDEN.to);
-    var gOpen = today >= gFrom && today <= gTo;
-    setTile('act-garden', gOpen, today < gFrom ? 'Leuchtet ab ' + fmtDayMonth.format(gFrom) + '.' : 'Für diesen Winter schon vorbei.');
+    if (today > gTo) {
+      setTile('act-garden', 'off', 'Für diesen Winter schon vorbei.');
+    } else if (today < gFrom) {
+      setTile('act-garden', 'soon', 'Leuchtet ab ' + fmtDayMonth.format(gFrom) + '.');
+      opensLater['act-garden'] = { date: gFrom, label: 'ab ' + dm(gFrom) };
+    } else {
+      setTile('act-garden', 'open');
+    }
 
     // Eiswelt: Oktober bis März
-    var iceOpen = ICE_MONTHS.indexOf(today.getMonth() + 1) !== -1;
-    setTile('act-eis', iceOpen, 'Die Eiswelt hat ab Oktober wieder offen.');
+    if (ICE_MONTHS.indexOf(today.getMonth() + 1) !== -1) {
+      setTile('act-eis', 'open');
+    } else {
+      setTile('act-eis', 'soon', 'Die Eiswelt hat ab Oktober wieder offen.');
+      opensLater['act-eis'] = { date: new Date(today.getFullYear(), 9, 1), label: 'ab Oktober' };
+    }
 
     // Fernsehturm: an Heiligabend zu
     var xmasEve = today.getMonth() === 11 && today.getDate() === 24;
-    setTile('act-turm', !xmasEve, 'An Heiligabend zu.');
+    setTile('act-turm', xmasEve ? 'off' : 'open', 'An Heiligabend zu.');
   }
 
   /* ---------- Navigation ---------- */
@@ -1124,6 +1197,39 @@
   };
   function showDetails() {
     Object.keys(DETAIL_FOR).forEach(function (sec) { $(sec).hidden = !isOn(DETAIL_FOR[sec]); });
+    updateDress();
+  }
+
+  // Dresscode passend zum Programm
+  function restaurantStyle(r) {
+    if (FANCY.indexOf(r) !== -1) return 'Fürs Essen: richtig schick';
+    if (CASUAL.indexOf(r) !== -1) return 'Fürs Essen: ganz entspannt';
+    return 'Fürs Essen: ein bisschen schick';
+  }
+  function dressItems() {
+    var items = [];
+    function add(t) { if (items.indexOf(t) === -1) items.push(t); }
+    if (COLD.some(isOn)) add('Mütze, Schal & Handschuhe');
+    if (JACKET.some(isOn)) add('Dicke Winterjacke');
+    if (isOn('act-rodel')) add('Wasserfeste Hose & Winterstiefel');
+    else if (SHOES.some(isOn)) add('Warme, bequeme Schuhe');
+    if (isOn('act-eis')) add('Dicke Socken (Schlittschuhe kann man ausleihen)');
+    if (isOn('act-therme')) {
+      add(/textilfrei/.test($('therme').value) ? 'Handtuch & Bademantel (dort ist textilfrei)' : 'Badesachen, Handtuch & Bademantel');
+    }
+    if (isOn('act-essen')) add(restaurantStyle($('restaurant').value));
+    if (isOn('act-kochen') || isOn('act-film')) add(items.length ? 'Für zu Hause: Jogginghose & Kuschelsocken' : 'Jogginghose & Kuschelsocken');
+    if (!items.length) add('Zieh dich warm an. Mehr verrate ich nicht.');
+    return items;
+  }
+  function updateDress() {
+    var ul = $('dress-list');
+    ul.textContent = '';
+    dressItems().forEach(function (t) {
+      var li = document.createElement('li');
+      li.textContent = t;
+      ul.appendChild(li);
+    });
   }
 
   /* ---------- 4 · Finale ---------- */
@@ -1134,11 +1240,39 @@
   function pick(selectId, actId) { return isOn(actId) ? $(selectId).value : null; }
 
   function collect() {
-    var acts = checked('act');
+    var today = startOfDay(new Date());
+    var markets = null;
+    if (isOn('act-markt')) {
+      markets = checked('markt').map(function (el) {
+        var f = el.getAttribute('data-from');
+        var soon = null;
+        if (f) {
+          var from = parseISO(f);
+          if (today < from) soon = { date: from, label: 'ab ' + dm(from) };
+        } else {
+          soon = opensLater['act-markt'] || null;
+        }
+        return { value: el.value, soon: soon };
+      });
+    }
+    var items = checked('act').filter(function (el) { return el.id !== 'act-ueberrasch'; }).map(function (el) {
+      return { id: el.id, value: el.value, soon: opensLater[el.id] || null };
+    });
+    // Welche Teile gehen heute, welche erst später?
+    var parts = [];
+    items.forEach(function (it) {
+      if (it.id === 'act-markt' && markets && markets.length) return;
+      parts.push(it.soon);
+    });
+    if (markets) markets.forEach(function (m) { parts.push(m.soon); });
+    if (isOn('act-ueberrasch')) parts.push(null);
+    var laterTimes = parts.filter(Boolean).map(function (s) { return s.date.getTime(); });
     return {
-      acts: acts.filter(function (el) { return el.id !== 'act-ueberrasch'; }).map(function (el) { return el.value; }),
+      items: items,
       surprise: isOn('act-ueberrasch'),
-      markt: pick('markt', 'act-markt'),
+      markets: markets,
+      anyToday: parts.some(function (s) { return !s; }),
+      firstLater: laterTimes.length ? new Date(Math.min.apply(null, laterTimes)) : null,
       therme: pick('therme', 'act-therme'),
       rodel: pick('rodel', 'act-rodel'),
       fall: isOn('act-eis') ? radioValue('fall') : null,
@@ -1146,22 +1280,37 @@
       dish: pick('dish', 'act-kochen'),
       genre: pick('genre', 'act-film'),
       drink: $('drink').value,
-      dress: radioValue('dress'),
+      dress: dressItems(),
       wish: tidy($('wish').value),
       curious: state.accept === 'aussuchen'
     };
   }
 
   function actsLine(c) {
-    if (c.acts.length) return c.acts.join(', ') + (c.surprise ? ' – und überrasch mich' : '');
+    var names = c.items.map(function (it) {
+      var showSoon = it.soon && !(it.id === 'act-markt' && c.markets && c.markets.length);
+      return it.value + (showSoon ? ' (' + it.soon.label + ')' : '');
+    });
+    if (names.length) return names.join(', ') + (c.surprise ? ' – und überrasch mich' : '');
     return c.surprise ? 'Überrasch mich!' : '';
+  }
+  function marketsLine(c) {
+    return (c.markets || []).map(function (m) { return m.value + (m.soon ? ' (' + m.soon.label + ')' : ''); }).join(', ');
+  }
+  function onlyLater(c) { return !!c.firstLater && !c.anyToday; }
+  function whenText(c) {
+    var now = new Date();
+    if (!c.firstLater) return 'Heute, ' + fmtLong.format(now);
+    if (c.anyToday) return 'Heute, ' + fmtLong.format(now) + ' – den Rest, sobald offen';
+    return 'Ab ' + fmtDayMonth.format(c.firstLater) + ', sobald offen';
   }
 
   function buildMessage(c) {
-    var lines = ['Winter-Date am ' + shortDate(new Date()) + ' ❄️'];
+    var head = onlyLater(c) ? 'Winter-Date ab ' + dm(c.firstLater) : 'Winter-Date am ' + shortDate(new Date());
+    var lines = [head + ' ❄️'];
     lines.push(c.curious ? 'Ich bin dabei! (Ich durfte ja aussuchen.)' : 'Ich bin dabei!');
     if (actsLine(c)) lines.push('Was wir machen: ' + actsLine(c));
-    if (c.markt) lines.push('Weihnachtsmarkt: ' + c.markt);
+    if (c.markets && c.markets.length) lines.push('Weihnachtsmarkt: ' + marketsLine(c));
     if (c.therme) lines.push('Therme: ' + c.therme);
     if (c.rodel) lines.push('Rodeln: ' + c.rodel + ' (sobald Schnee liegt)');
     if (c.fall) lines.push('Wer beim Eislaufen zuerst hinfällt: ' + c.fall);
@@ -1169,7 +1318,6 @@
     if (c.dish) lines.push('Wir kochen: ' + c.dish);
     if (c.genre) lines.push('Film: ' + c.genre);
     if (c.drink) lines.push('Zum Aufwärmen: ' + c.drink);
-    if (c.dress) lines.push('Dresscode: ' + c.dress);
     if (c.wish) lines.push('Mein Wunsch: ' + c.wish);
     lines.push('Ich freu mich auf dich ❤️');
     return lines.join('\n');
@@ -1177,8 +1325,11 @@
 
   function updateFinale() {
     var c = collect();
-    var rows = [['Wann', 'Heute, ' + fmtLong.format(new Date())], ['Was', actsLine(c)]];
-    if (c.markt !== null) rows.push(['Weihnachtsmarkt', c.markt]);
+    $('finale-date').textContent = onlyLater(c)
+      ? 'Wir sehen uns ab ' + fmtDayMonth.format(c.firstLater) + '. Zieh dich warm an.'
+      : 'Heute, ' + fmtLong.format(new Date()) + '. Zieh dich warm an.';
+    var rows = [['Wann', whenText(c)], ['Was', actsLine(c)]];
+    if (c.markets !== null) rows.push(['Weihnachtsmarkt', marketsLine(c)]);
     if (c.therme !== null) rows.push(['Therme', c.therme]);
     if (c.rodel !== null) rows.push(['Rodeln', c.rodel ? c.rodel + ' (sobald Schnee liegt)' : '']);
     if (c.fall !== null) rows.push(['Wer zuerst hinfällt', upperFirst(c.fall)]);
@@ -1186,7 +1337,7 @@
     if (c.dish !== null) rows.push(['Wir kochen', c.dish]);
     if (c.genre !== null) rows.push(['Film', c.genre]);
     rows.push(['Zum Aufwärmen', c.drink]);
-    rows.push(['Dresscode', c.dress]);
+    rows.push(['Dresscode', c.dress.join('\n')]);
     if (c.wish) rows.push(['Dein Wunsch', c.wish]);
     var dl = $('plan-list');
     dl.textContent = '';
@@ -1347,7 +1498,8 @@
     go('details');
   });
 
-  SELECTS.forEach(function (id) { $(id).addEventListener('change', save); });
+  inputs('markt').forEach(function (el) { el.addEventListener('change', save); });
+  SELECTS.forEach(function (id) { $(id).addEventListener('change', function () { save(); updateDress(); }); });
   RADIOS.forEach(function (n) { inputs(n).forEach(function (el) { el.addEventListener('change', save); }); });
   $('wish').addEventListener('input', function () {
     $('wish-count').textContent = $('wish').value.length + ' / 300';
